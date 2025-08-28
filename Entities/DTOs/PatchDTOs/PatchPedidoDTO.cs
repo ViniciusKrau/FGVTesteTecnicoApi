@@ -1,16 +1,19 @@
 using System.ComponentModel.DataAnnotations;
 using TesteTecnicoApi.Entities.DTOs.Utils;
 
-namespace TesteTecnicoApi.Entities.DTOs.PostDTOs;
+namespace TesteTecnicoApi.Entities.DTOs.PatchDTOs;
 
-public class PostPedidoDTO {
+public class PatchPedidoDTO{
 
     [Required]
+    public int CodPedido { get; set; }
+
     public int CodCliente { get; set; }
 
-    [Required]
     public decimal ValorTotal { get; set; }
+    
+    public DateTimeOffset DataPedido { get; set; }
 
-    [Required]
     public List<ProdutoQuantidade> ProdutosQuantidades { get; set; } = [];
+
 }

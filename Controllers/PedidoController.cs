@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TesteTecnicoApi.Entities;
+using TesteTecnicoApi.Entities.DTOs.PatchDTOs;
 using TesteTecnicoApi.Entities.DTOs.PostDTOs;
 using TesteTecnicoApi.Service;
 
@@ -30,15 +31,8 @@ public class PedidoController : ControllerBase {
     }
 
     [HttpPatch("{codPedido}")]
-    public async Task<ActionResult<Pedido>> UpdatePedido(int codPedido, [FromBody] PostPedidoDTO postPedidoDTO, CancellationToken cancellationToken) {
-        var pedido = await _pedidoService.GetPedidoByIdAsync(codPedido, cancellationToken);
-        if (pedido == null) {
-            return NotFound();
-        }
-        pedido.CodCliente = postPedidoDTO.CodCliente;
-        pedido.ValorTotal = postPedidoDTO.ValorTotal;
-        pedido.DataPedido = DateTimeOffset.UtcNow;
-        var updatedPedido = await _pedidoService.UpdatePedidoAsync(pedido, cancellationToken);
+    public async Task<ActionResult<Pedido>> UpdatePedido([FromBody] PatchPedidoDTO patchPedidoDTO, CancellationToken cancellationToken) {
+        var updatedPedido = await _pedidoService.UpdatePedidoAsync(patchPedidoDTO, cancellationToken);
         return Ok(updatedPedido);
     }
 

@@ -50,7 +50,7 @@ public class SqlPedidoRepository(IConfiguration config) : IPedidoRepository {
         const string sql = @"UPDATE Pedido
                                  SET CodCliente = @CodCliente,
                                      DataPedido = @DataPedido,
-                                     ValorTotal = @ValorTotal
+                                     ValorTotal = @ValorTotal,
                                  WHERE CodPedido = @CodPedido;";
         await using var conn = CreateConnection();
         var affectedRows = await conn.ExecuteAsync(
