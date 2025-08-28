@@ -1,6 +1,7 @@
 
 
-using TesteTecnicoApi.Models;
+using TesteTecnicoApi.Entities;
+using TesteTecnicoApi.Entities.DTOs;
 using TesteTecnicoApi.Repositories;
 
 namespace TesteTecnicoApi.Service;
@@ -39,5 +40,13 @@ public class ClienteService {
         return await _repo.GetByNameAsync(name, cancellationToken);
     }
 
-
+    public async Task<Cliente> AddAsync(PostClienteDTO postclienteDTO, CancellationToken cancellationToken = default) {
+        var cliente = new Cliente {
+            CNPJ = postclienteDTO.CNPJ,
+            Nome = postclienteDTO.Nome,
+            Email = postclienteDTO.Email,
+            DataCadastro = DateTimeOffset.UtcNow
+        };
+        return await _repo.AddAsync(cliente, cancellationToken);
+    }
 }

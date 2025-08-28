@@ -1,4 +1,4 @@
-namespace TesteTecnicoApi.DTOs;
+namespace TesteTecnicoApi.Entities.DTOs;
 
 public class PostProdutoDTO {
     public string Nome { get; set; } = null!;

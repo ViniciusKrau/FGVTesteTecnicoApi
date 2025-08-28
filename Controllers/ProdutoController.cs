@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using TesteTecnicoApi.DTOs;
-using TesteTecnicoApi.Models;
+using TesteTecnicoApi.Entities.DTOs;
+using TesteTecnicoApi.Entities;
 using TesteTecnicoApi.Service;
 
 namespace TesteTecnicoApi.Controllers;

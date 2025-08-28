@@ -1,6 +1,6 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
-using TesteTecnicoApi.Models;
+using TesteTecnicoApi.Entities;
 
 namespace TesteTecnicoApi.Service;
 

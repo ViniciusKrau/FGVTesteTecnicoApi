@@ -1,5 +1,5 @@
-using TesteTecnicoApi.DTOs;
-using TesteTecnicoApi.Models;
+using TesteTecnicoApi.Entities.DTOs;
+using TesteTecnicoApi.Entities;
 using TesteTecnicoApi.Repositories;
 
 namespace TesteTecnicoApi.Service;
@@ -28,10 +28,16 @@ public class ProdutoService {
         string? nomeContains = null) {
         return await _repo.GetPageAsync(page, pageSize, cancellationToken, sort, minPreco, maxPreco, minEstoque, nomeContains);
     }
-    
+
     public async Task<Produto> AddAsync(PostProdutoDTO produtoDto, CancellationToken cancellationToken = default) {
-        return await _repo.AddAsync(produtoDto, cancellationToken);
+        var produto = new Produto {
+            Nome = produtoDto.Nome,
+            Preco = produtoDto.Preco,
+            Estoque = produtoDto.Estoque,
+        };
+        return await _repo.AddAsync(produto, cancellationToken);
     }
 
+    
     
 }

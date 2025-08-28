@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace TesteTecnicoApi.Models;
+namespace TesteTecnicoApi.Entities;
 
 public class ItensPedido : BaseEntity {
     public int CodItemPedido { get; set; }

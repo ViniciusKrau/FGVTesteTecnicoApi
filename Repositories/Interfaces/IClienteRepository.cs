@@ -1,9 +1,9 @@
-using TesteTecnicoApi.Models;
+using TesteTecnicoApi.Entities;
 
 namespace TesteTecnicoApi.Repositories;
 
 public interface IClienteRepository {
-    Task<IReadOnlyList<Cliente>> GetAllAsync(CancellationToken cancellationToken);
+
     Task<PagedResult<Cliente>> GetPageAsync(int page, int pageSize, CancellationToken cancellationToken,
         string sort = "CodCliente",
         string? nomeContains = null,
@@ -11,8 +11,11 @@ public interface IClienteRepository {
         string? emailContains = null,
         DateTime? minDataCadastro = null,
         DateTime? maxDataCadastro = null);
+    Task<IReadOnlyList<Cliente>> GetAllAsync(CancellationToken cancellationToken);
 
     Task<Cliente?> GetByIdAsync(int id, CancellationToken cancellationToken);
 
     Task<Cliente?> GetByNameAsync(string name, CancellationToken cancellationToken);
+
+    Task<Cliente> AddAsync(Cliente cliente, CancellationToken cancellationToken);
 }

@@ -1,4 +1,4 @@
-namespace TesteTecnicoApi.Models;
+namespace TesteTecnicoApi.Entities;
 
 public class Cliente : BaseEntity {
     public int CodCliente { get; set; }

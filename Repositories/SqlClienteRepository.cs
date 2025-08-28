@@ -1,6 +1,6 @@
 using Microsoft.Data.SqlClient;
 using Dapper;
-using TesteTecnicoApi.Models;
+using TesteTecnicoApi.Entities;
 using System.Data;
 using TesteTecnicoApi.Service;
 
@@ -74,5 +74,15 @@ public class SqlClienteRepository(IConfiguration config) : IClienteRepository {
         return new PagedResult<Cliente>(items, totalItems, page, pageSize);
     }
 
+    public async Task<Cliente> AddAsync(Cliente cliente, CancellationToken cancellationToken) {
+        const string sql = @"INSERT INTO Cliente (CNPJ, Nome, Email, DataCadastro)
+                             VALUES (@CNPJ, @Nome, @Email, @DataCadastro);
+                             SELECT CAST(SCOPE_IDENTITY() as int);";
+        await using var conn = CreateConnection();
+        var id = await conn.ExecuteScalarAsync<int>(
+            new CommandDefinition(sql, cliente, cancellationToken: cancellationToken));
+        cliente.CodCliente = id;
+        return cliente;
+    }
 
 }

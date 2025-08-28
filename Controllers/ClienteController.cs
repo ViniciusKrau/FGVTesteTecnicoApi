@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using TesteTecnicoApi.Models;
+using TesteTecnicoApi.Entities.DTOs;
+using TesteTecnicoApi.Entities;
 using TesteTecnicoApi.Service;
 
 namespace TesteTecnicoApi.Controllers;
@@ -44,5 +45,22 @@ public class ClienteController : ControllerBase {
     public async Task<ActionResult<IReadOnlyList<Cliente>>> GetAllClientes(CancellationToken cancellationToken = default) {
         var clientes = await _service.GetAllAsync(cancellationToken);
         return Ok(clientes);
+    }
+
+    [HttpPost("create")]
+    public async Task<ActionResult<Cliente>> addCliente([FromBody] PostClienteDTO postclienteDto, CancellationToken cancellationToken = default) {
+        if (postclienteDto == null) {
+            return BadRequest("Cliente data is required.");
+        }
+
+        // Basic validation
+        if (string.IsNullOrWhiteSpace(postclienteDto.CNPJ) ||
+            string.IsNullOrWhiteSpace(postclienteDto.Nome) ||
+            string.IsNullOrWhiteSpace(postclienteDto.Email)) {
+            return BadRequest("CNPJ, Nome, and Email are required fields.");
+        }
+
+        var createdCliente = await _service.AddAsync(postclienteDto, cancellationToken);
+        return CreatedAtAction(nameof(GetClienteById), new { id = createdCliente.CodCliente }, createdCliente);
     }
 }

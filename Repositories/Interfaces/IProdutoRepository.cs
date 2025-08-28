@@ -1,5 +1,4 @@
-using TesteTecnicoApi.DTOs;
-using TesteTecnicoApi.Models;
+using TesteTecnicoApi.Entities;
 
 namespace TesteTecnicoApi.Repositories;
 
@@ -16,5 +15,5 @@ public interface IProdutoRepository {
         int? minEstoque = null,
         string? nomeContains = null);
 
-    Task<Produto> AddAsync(PostProdutoDTO produtoDto, CancellationToken ct);
+    Task<Produto> AddAsync(Produto produto, CancellationToken ct);
 }

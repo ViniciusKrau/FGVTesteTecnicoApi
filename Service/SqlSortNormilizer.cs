@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.Identity.Client;
-using TesteTecnicoApi.Models;
+using TesteTecnicoApi.Entities;
 
 namespace TesteTecnicoApi.Service;
 

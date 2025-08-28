@@ -1,6 +1,6 @@
 namespace TesteTecnicoApi.Repositories.Interfaces;
 
-using TesteTecnicoApi.Models;
+using TesteTecnicoApi.Entities;
 
 public interface IItensPedidosRepository {
     Task<IReadOnlyList<ItensPedido>> GetAllAsync(CancellationToken cancellationToken);
