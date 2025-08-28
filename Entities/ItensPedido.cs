@@ -3,13 +3,13 @@ using System.Text.Json.Serialization;
 namespace TesteTecnicoApi.Entities;
 
 public class ItensPedido : BaseEntity {
-    public int CodItemPedido { get; set; }
-    public required int CodPedido { get; set; }
+    public int CodProduto { get; set; }
+    public int CodPedido { get; set; }
     public required int Quantidade { get; set; }
     public required decimal PrecoUnitario { get; set; }
 
     [JsonIgnore]
-    public Pedido Pedido { get; set; } = null!;
+    public Pedido? Pedido { get; set; }
     public Produto? Produto { get; set; }
 
     public static string GetDefaultSort() {

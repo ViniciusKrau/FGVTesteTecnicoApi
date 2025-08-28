@@ -2,7 +2,7 @@ using Microsoft.Data.SqlClient;
 using Dapper;
 using TesteTecnicoApi.Entities;
 using TesteTecnicoApi.Service;
-using TesteTecnicoApi.Entities.DTOs;
+using TesteTecnicoApi.Entities.DTOs.PostDTOs;
 
 namespace TesteTecnicoApi.Repositories;
 

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TesteTecnicoApi.Entities.DTOs;
+namespace TesteTecnicoApi.Entities.DTOs.PostDTOs;
 
 public class PostPedidoDTO {
 
@@ -10,5 +10,5 @@ public class PostPedidoDTO {
     [Required]
     public decimal ValorTotal { get; set; }
 
-    public List<int> Itens { get; set; } = [];
+    public List<int> Produtos { get; set; } = [];
 }

@@ -1,10 +1,12 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace TesteTecnicoApi.Entities.DTOs;
+namespace TesteTecnicoApi.Entities.DTOs.PostDTOs;
 
 public class PostItensPedidoDto {
 
+    [Required]
+    public int CodProduto { get; set; }
     [Required]
     public int CodPedido { get; set; }
     [Required]

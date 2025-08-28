@@ -1,7 +1,7 @@
 
 
 using TesteTecnicoApi.Entities;
-using TesteTecnicoApi.Entities.DTOs;
+using TesteTecnicoApi.Entities.DTOs.PostDTOs;
 using TesteTecnicoApi.Repositories;
 
 namespace TesteTecnicoApi.Service;

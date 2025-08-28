@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TesteTecnicoApi.Entities.DTOs;
+namespace TesteTecnicoApi.Entities.DTOs.PostDTOs;
 
 public class PostClienteDTO {
 

@@ -9,7 +9,7 @@ public class Pedido : BaseEntity {
     public required DateTimeOffset DataPedido { get; set; }
     [JsonIgnore]
     public Cliente Cliente { get; set; } = null!;
-    public List<ItensPedido> Itens { get; set; } = new();
+    public List<ItensPedido> Itens { get; set; } = [];
 
     public static string GetDefaultSort() {
         return "CodPedido";
