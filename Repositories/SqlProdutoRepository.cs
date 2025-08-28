@@ -1,70 +1,101 @@
 using Microsoft.Data.SqlClient;
+using Dapper;
 using TesteTecnicoApi.Models;
 using TesteTecnicoApi.Service;
+using TesteTecnicoApi.DTOs;
 
 namespace TesteTecnicoApi.Repositories;
 
 public class SqlProdutoRepository(IConfiguration config) : IProdutoRepository {
     private readonly string _connectionString = config.GetConnectionString("DefaultConnection")!;
 
+    private SqlConnection CreateConnection() => new SqlConnection(_connectionString);
     public async Task<IReadOnlyList<Produto>> GetAllAsync(CancellationToken cancellationToken) {
-        var list = new List<Produto>();
-        await using var conn = new SqlConnection(_connectionString);
-        await conn.OpenAsync(cancellationToken);
-
         const string sql = "SELECT CodProduto, Nome, Preco, Estoque FROM Produto";
-        await using var cmd = new SqlCommand(sql, conn);
-        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-
-        while (await reader.ReadAsync(cancellationToken)) {
-            list.Add(new Produto {
-                CodProduto = reader.GetInt32(reader.GetOrdinal("CodProduto")),
-                Nome = reader.GetString(reader.GetOrdinal("Nome")),
-                Preco = reader.GetDecimal(reader.GetOrdinal("Preco")),
-                Estoque = reader.GetInt32(reader.GetOrdinal("Estoque"))
-            });
-        }
-
-        return list;
+        await using var conn = CreateConnection();
+        var rows = await conn.QueryAsync<Produto>(
+            new CommandDefinition(sql, cancellationToken: cancellationToken));
+        return rows.AsList();
     }
 
     public async Task<Produto?> GetByIdAsync(int id, CancellationToken cancellationToken) {
-        await using var conn = new SqlConnection(_connectionString);
-        await conn.OpenAsync(cancellationToken);
+        const string sql = @"SELECT CodProduto, Nome, Preco, Estoque
+                             FROM Produto
+                             WHERE CodProduto = @id";
+        await using var conn = CreateConnection();
+        return await conn.QueryFirstOrDefaultAsync<Produto>(
+            new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
+    }
 
-        const string sql = "SELECT CodProduto, Nome, Preco, Estoque FROM Produto WHERE CodProduto = @Id";
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.Add("@Id", System.Data.SqlDbType.Int).Value = id;
+    public async Task<PagedResult<Produto>> GetPageAsync(
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken,
+        string sort = "CodProduto",
+        decimal? minPreco = null,
+        decimal? maxPreco = null,
+        int? minEstoque = null,
+        string? nomeContains = null) {
 
-        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-        if (await reader.ReadAsync(cancellationToken)) {
-            return new Produto {
-                CodProduto = reader.GetInt32(reader.GetOrdinal("CodProduto")),
-                Nome = reader.GetString(reader.GetOrdinal("Nome")),
-                Preco = reader.GetDecimal(reader.GetOrdinal("Preco")),
-                Estoque = reader.GetInt32(reader.GetOrdinal("Estoque"))
-            };
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (minPreco.HasValue && maxPreco.HasValue && minPreco > maxPreco)
+            throw new ArgumentException("minPreco cannot be greater than maxPreco.");
+
+        await using var conn = CreateConnection();
+        var orderBy = SqlSortNormalizer.NormalizeSort(typeof(Produto), sort);
+
+        var conditions = new List<string>();
+        var parameters = new DynamicParameters();
+
+        if (minPreco.HasValue) {
+            conditions.Add("Preco >= @minPreco");
+            parameters.Add("minPreco", minPreco.Value);
         }
-        return null;
+        if (maxPreco.HasValue) {
+            conditions.Add("Preco <= @maxPreco");
+            parameters.Add("maxPreco", maxPreco.Value);
+        }
+        if (minEstoque.HasValue) {
+            conditions.Add("Estoque >= @minEstoque");
+            parameters.Add("minEstoque", minEstoque.Value);
+        }
+        if (!string.IsNullOrWhiteSpace(nomeContains)) {
+            conditions.Add("Nome LIKE @nomeLike");
+            parameters.Add("nomeLike", $"%{nomeContains}%");
+        }
+
+        var where = conditions.Count > 0 ? "WHERE " + string.Join(" AND ", conditions) : "";
+
+        var sql = $@"
+            SELECT CodProduto, Nome, Preco, Estoque
+            FROM Produto
+            {where}
+            ORDER BY {orderBy}
+            OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
+
+            SELECT COUNT(*) FROM Produto
+            {where};";
+
+        var offset = (page - 1) * pageSize;
+        parameters.Add("offset", offset);
+        parameters.Add("pageSize", pageSize);
+
+        var multi = await conn.QueryMultipleAsync(
+            new CommandDefinition(sql, parameters, cancellationToken: cancellationToken));
+
+        var items = (await multi.ReadAsync<Produto>()).AsList();
+        var totalItems = await multi.ReadFirstAsync<int>();
+        return new PagedResult<Produto>(items, page, pageSize, totalItems);
     }
+    public async Task<Produto> AddAsync(PostProdutoDTO produtoDto, CancellationToken cancellationToken) {
+        const string sql = @"
+            INSERT INTO Produto (Nome, Preco, Estoque)
+            OUTPUT INSERTED.CodProduto, INSERTED.Nome, INSERTED.Preco, INSERTED.Estoque
+            VALUES (@Nome, @Preco, @Estoque);";
 
-    public async Task<PagedResult<Produto>> GetPageAsync(int page, int pageSize, CancellationToken cancellationToken) {
-        await using var conn = new SqlConnection(_connectionString);
-        await conn.OpenAsync(cancellationToken);
-
-        const string baseSql = "SELECT CodProduto, Nome, Preco, Estoque FROM Produto";
-        return await conn.QueryPagedAsync(
-            baseSql,
-            "CodProduto",
-            page,
-            pageSize,
-            r => new Produto {
-                CodProduto = r.GetInt32(r.GetOrdinal("CodProduto")),
-                Nome = r.GetString(r.GetOrdinal("Nome")),
-                Preco = r.GetDecimal(r.GetOrdinal("Preco")),
-                Estoque = r.GetInt32(r.GetOrdinal("Estoque"))
-            },
-            cancellationToken);
+        await using var conn = CreateConnection();
+        return await conn.QuerySingleAsync<Produto>(
+            new CommandDefinition(sql, produtoDto, cancellationToken: cancellationToken));
     }
-
 }

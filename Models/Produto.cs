@@ -10,4 +10,8 @@ public class Produto {
 
     [JsonIgnore]
     public List<ItensPedido>? ItensPedidos { get; set; } = new();
+
+    public string GetDefaultSort() {
+        return "CodProduto";
+    }
 }
