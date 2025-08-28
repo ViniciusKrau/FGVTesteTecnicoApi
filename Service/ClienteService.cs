@@ -12,8 +12,21 @@ public class ClienteService {
         _repo = repo;
     }
 
-    public async Task<PagedResult<Cliente>> GetPageAsync(int page, int pageSize, CancellationToken cancellationToken = default) {
-        return await _repo.GetPageAsync(page, pageSize, cancellationToken);
+    public async Task<PagedResult<Cliente>> GetPageAsync(int page, int pageSize, CancellationToken cancellationToken,
+                            string sort = "CodCliente",
+                            string? nomeContains = null,
+                            string? cnpjContains = null,
+                            string? emailContains = null,
+                            DateTime? minDataCadastro = null,
+                            DateTime? maxDataCadastro = null
+                            ) {
+        return await _repo.GetPageAsync(page, pageSize, cancellationToken,
+                            sort,
+                            nomeContains,
+                            cnpjContains,
+                            emailContains,
+                            minDataCadastro,
+                            maxDataCadastro);
     }
 
     public async Task<Cliente?> GetByIdAsync(int id, CancellationToken cancellationToken = default) {
@@ -25,6 +38,6 @@ public class ClienteService {
     public async Task<Cliente?> GetByNameAsync(string name, CancellationToken cancellationToken = default) {
         return await _repo.GetByNameAsync(name, cancellationToken);
     }
-    
+
 
 }
