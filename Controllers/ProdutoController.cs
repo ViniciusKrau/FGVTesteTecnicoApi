@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using TesteTecnicoApi.Models;
-using TesteTecnicoApi.Repositories;
 using TesteTecnicoApi.DTOs;
+using TesteTecnicoApi.Models;
 using TesteTecnicoApi.Service;
 
 namespace TesteTecnicoApi.Controllers;
@@ -9,10 +8,9 @@ namespace TesteTecnicoApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class ProdutoController : ControllerBase {
-    private readonly IProdutoRepository _repo;
-
-    public ProdutoController(IProdutoRepository repo) {
-        _repo = repo;
+    private readonly ProdutoService _service;
+    public ProdutoController(ProdutoService service) {
+        _service = service;
     }
 
     [HttpGet]
@@ -20,7 +18,7 @@ public class ProdutoController : ControllerBase {
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10,
         CancellationToken cancellationToken = default) {
-        var result = await _repo.GetPageAsync(page, pageSize, cancellationToken);
+        var result = await _service.GetPageAsync(page, pageSize, cancellationToken);
 
         Response.Headers["X-Total-Count"] = result.TotalCount.ToString();
         Response.Headers["X-Total-Pages"] = result.TotalPages.ToString();
@@ -36,7 +34,7 @@ public class ProdutoController : ControllerBase {
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Produto>> GetProdutoById(int id, CancellationToken cancellationToken = default) {
-        var produto = await _repo.GetByIdAsync(id, cancellationToken);
+        var produto = await _service.GetByIdAsync(id, cancellationToken);
         if (produto == null) {
             return NotFound();
         }
@@ -45,7 +43,7 @@ public class ProdutoController : ControllerBase {
 
     [HttpGet("all")]
     public async Task<ActionResult<IReadOnlyList<Produto>>> GetAllProdutos(CancellationToken cancellationToken = default) {
-        var produtos = await _repo.GetAllAsync(cancellationToken);
+        var produtos = await _service.GetAllAsync(cancellationToken);
         return Ok(produtos);
     }
 
@@ -59,7 +57,7 @@ public class ProdutoController : ControllerBase {
         [FromQuery] int? minEstoque = null,
         [FromQuery] string? nomeContains = null,
         CancellationToken cancellationToken = default) {
-        var result = await _repo.GetPageAsync(
+        var result = await _service.GetPageAsync(
             page,
             pageSize,
             cancellationToken,
@@ -81,14 +79,13 @@ public class ProdutoController : ControllerBase {
             Data = result.Items
         });
     }
+
     [HttpPost("create")]
     public async Task<ActionResult<Produto>> CreateProduto([FromBody] PostProdutoDTO produtoDto, CancellationToken cancellationToken = default) {
         if (produtoDto == null) {
             return BadRequest("Produto cannot be null.");
         }
-        SqlSortNormalizer.NormalizeSort<Produto>("");
-        var createdProduto = await _repo.AddAsync(produtoDto, cancellationToken);
+        var createdProduto = await _service.AddAsync(produtoDto, cancellationToken);
         return CreatedAtAction(nameof(GetProdutoById), new { id = createdProduto.CodProduto }, createdProduto);
     }
-
 }

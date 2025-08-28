@@ -24,8 +24,8 @@ public static class SqlSortNormalizer {
         }
     }
 
-    public static string NormalizeSort<TModels>(string sort) {
-        Type tipo = typeof(TModels);
+    public static string NormalizeSort<T>(string sort) where T : BaseEntity {
+        Type tipo = typeof(T);
         PropertyInfo[] properties = tipo.GetProperties();
         string[] propertiesNames = properties.Select(p => p.Name).ToArray();
         foreach (string propName in propertiesNames) {
@@ -33,7 +33,7 @@ public static class SqlSortNormalizer {
                 return propName;
             }
         }
-        return propertiesNames[0];
+        return T.GetDefaultSort();
     }
 
     public static string NormalizeSortProduto(string? sort) {

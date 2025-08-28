@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace TesteTecnicoApi.Models;
 
-public class Produto {
+public class Produto : BaseEntity {
     public int CodProduto { get; set; }
     public required string Nome { get; set; }
     public required decimal Preco { get; set; }
@@ -11,7 +11,7 @@ public class Produto {
     [JsonIgnore]
     public List<ItensPedido>? ItensPedidos { get; set; } = new();
 
-    public string GetDefaultSort() {
+    public static string GetDefaultSort() {
         return "CodProduto";
     }
 }

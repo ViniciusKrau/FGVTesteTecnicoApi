@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace TesteTecnicoApi.Models;
 
-public class ItensPedido : BaseModel {
+public class ItensPedido : BaseEntity {
     public int CodItemPedido { get; set; }
     public required int CodPedido { get; set; }
     public required int Quantidade { get; set; }
@@ -12,7 +12,7 @@ public class ItensPedido : BaseModel {
     public Pedido Pedido { get; set; } = null!;
     public Produto? Produto { get; set; }
 
-    public string GetDefaultSort() {
+    public static string GetDefaultSort() {
         return "CodItemPedido";
     }
 }
