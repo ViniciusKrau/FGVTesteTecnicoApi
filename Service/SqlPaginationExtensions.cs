@@ -12,14 +12,14 @@ public static class SqlPaginationExtensions {
         int page,
         int pageSize,
         Func<SqlDataReader, T> map,
-        CancellationToken ct) {
+        CancellationToken cancellationToken) {
 
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 10;
 
         var countSql = $"SELECT COUNT(*) FROM ({baseSelectSql}) AS CountScope";
         await using var countCmd = new SqlCommand(countSql, conn);
-        var total = (int)await countCmd.ExecuteScalarAsync(ct);
+        var total = (int)await countCmd.ExecuteScalarAsync(cancellationToken);
 
         if (total == 0)
             return new PagedResult<T>(Array.Empty<T>(), page, pageSize, 0);
@@ -37,8 +37,8 @@ public static class SqlPaginationExtensions {
         pageCmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
         pageCmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
 
-        await using var reader = await pageCmd.ExecuteReaderAsync(ct);
-        while (await reader.ReadAsync(ct)) {
+        await using var reader = await pageCmd.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken)) {
             items.Add(map(reader));
         }
 

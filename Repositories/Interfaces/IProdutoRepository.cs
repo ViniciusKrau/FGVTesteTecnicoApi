@@ -3,8 +3,10 @@ using TesteTecnicoApi.Entities;
 namespace TesteTecnicoApi.Repositories;
 
 public interface IProdutoRepository {
-    Task<IReadOnlyList<Produto>> GetAllAsync(CancellationToken ct);
-    Task<Produto?> GetByIdAsync(int id, CancellationToken ct);
+    Task<IReadOnlyList<Produto>> GetAllAsync(CancellationToken cancellationToken);
+    Task<Produto?> GetByIdAsync(int id, CancellationToken cancellationToken);
+
+    Task<List<Produto>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken);
     Task<PagedResult<Produto>> GetPageAsync(
         int page,
         int pageSize,
@@ -15,5 +17,5 @@ public interface IProdutoRepository {
         int? minEstoque = null,
         string? nomeContains = null);
 
-    Task<Produto> AddAsync(Produto produto, CancellationToken ct);
+    Task<Produto> AddAsync(Produto produto, CancellationToken cancellationToken);
 }

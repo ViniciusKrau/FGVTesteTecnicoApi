@@ -17,6 +17,15 @@ public class SqlProdutoRepository(IConfiguration config) : IProdutoRepository {
             new CommandDefinition(sql, cancellationToken: cancellationToken));
         return rows.AsList();
     }
+    public async Task<List<Produto>> GetByIdsAsync(IEnumerable<int> codProdutos, CancellationToken cancellationToken) {
+        const string sql = @"SELECT CodProduto, Nome, Preco, Estoque
+                             FROM Produto
+                             WHERE CodProduto IN @codProdutos";
+        await using var conn = CreateConnection();
+        var produtos = await conn.QueryAsync<Produto>(
+            new CommandDefinition(sql, new { codProdutos }, cancellationToken: cancellationToken));
+        return produtos.AsList();
+    }
 
     public async Task<Produto?> GetByIdAsync(int id, CancellationToken cancellationToken) {
         const string sql = @"SELECT CodProduto, Nome, Preco, Estoque
@@ -88,7 +97,7 @@ public class SqlProdutoRepository(IConfiguration config) : IProdutoRepository {
         var totalItems = await multi.ReadFirstAsync<int>();
         return new PagedResult<Produto>(items, page, pageSize, totalItems);
     }
-    public async Task<Produto> AddAsync(PostProdutoDTO produtoDto, CancellationToken cancellationToken) {
+    public async Task<Produto> AddAsync(Produto produto, CancellationToken cancellationToken) {
         const string sql = @"
             INSERT INTO Produto (Nome, Preco, Estoque)
             OUTPUT INSERTED.CodProduto, INSERTED.Nome, INSERTED.Preco, INSERTED.Estoque
@@ -96,6 +105,6 @@ public class SqlProdutoRepository(IConfiguration config) : IProdutoRepository {
 
         await using var conn = CreateConnection();
         return await conn.QuerySingleAsync<Produto>(
-            new CommandDefinition(sql, produtoDto, cancellationToken: cancellationToken));
+            new CommandDefinition(sql, produto, cancellationToken: cancellationToken));
     }
 }

@@ -28,13 +28,13 @@ public class SqlClienteRepository(IConfiguration config) : IClienteRepository {
             new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
     }
 
-    public async Task<Cliente?> GetByNameAsync(string name, CancellationToken ct) {
+    public async Task<Cliente?> GetByNameAsync(string name, CancellationToken cancellationToken) {
         const string sql = @"SELECT CodCliente, CNPJ, Nome, Email, DataCadastro
                              FROM Cliente
                              WHERE Nome = @name";
         await using var conn = CreateConnection();
         return await conn.QueryFirstOrDefaultAsync<Cliente>(
-            new CommandDefinition(sql, new { name }, cancellationToken: ct));
+            new CommandDefinition(sql, new { name }, cancellationToken: cancellationToken));
     }
 
     public async Task<PagedResult<Cliente>> GetPageAsync(

@@ -17,6 +17,10 @@ public class ProdutoService {
     public async Task<Produto?> GetByIdAsync(int id, CancellationToken cancellationToken = default) {
         return await _repo.GetByIdAsync(id, cancellationToken);
     }
+
+    public async Task<List<Produto>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken = default) {
+        return await _repo.GetByIdsAsync(ids, cancellationToken);
+    }
     public async Task<IReadOnlyList<Produto>> GetAllAsync(CancellationToken cancellationToken = default) {
         return await _repo.GetAllAsync(cancellationToken);
     }
