@@ -65,4 +65,14 @@ public class SqlPedidoRepository(IConfiguration config) : IPedidoRepository {
         }
         return pedido;
     }
+
+    public async Task DeleteAsync(int codPedido, CancellationToken cancellationToken) {
+        const string sql = @"DELETE FROM Pedido WHERE CodPedido = @CodPedido;";
+        await using var conn = CreateConnection();
+        var affectedRows = await conn.ExecuteAsync(
+            new CommandDefinition(sql, new { codPedido }, cancellationToken: cancellationToken));
+        if (affectedRows == 0) {
+            throw new KeyNotFoundException($"Pedido with CodPedido {codPedido} not found.");
+        }
+    }
 }

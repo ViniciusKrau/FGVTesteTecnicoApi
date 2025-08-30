@@ -42,4 +42,10 @@ public class PedidoController : ControllerBase {
         return CreatedAtAction(nameof(GetPedidoById), new { codPedido = createdPedido.CodPedido }, createdPedido);
     }
 
+    [HttpDelete("{codPedido:int}")]
+    public async Task<IActionResult> DeletePedido(int codPedido, CancellationToken cancellationToken) {
+        await _pedidoService.DeletePedidoAsync(codPedido, cancellationToken);
+        return NoContent();
+    }
+
 }

@@ -1,6 +1,5 @@
-
-
 using TesteTecnicoApi.Entities;
+using TesteTecnicoApi.Entities.DTOs.PatchDTOs;
 using TesteTecnicoApi.Entities.DTOs.PostDTOs;
 using TesteTecnicoApi.Repositories;
 
@@ -45,8 +44,27 @@ public class ClienteService {
             CNPJ = postclienteDTO.CNPJ,
             Nome = postclienteDTO.Nome,
             Email = postclienteDTO.Email,
-            DataCadastro = DateTimeOffset.UtcNow
+            DataCadastro = DateTimeOffset.Now
         };
         return await _repo.AddAsync(cliente, cancellationToken);
+    }
+
+    public async Task<Cliente> UpdateAsync(PatchClienteDTO patchClienteDTO, CancellationToken cancellationToken = default) {
+
+        Cliente? existing = await _repo.GetByIdAsync(patchClienteDTO.CodCliente, cancellationToken) ?? throw new KeyNotFoundException($"Cliente with ID {patchClienteDTO.CodCliente} not found.");
+        existing.CNPJ = !string.IsNullOrWhiteSpace(patchClienteDTO.CNPJ) ? patchClienteDTO.CNPJ : existing.CNPJ;
+        existing.Nome = !string.IsNullOrWhiteSpace(patchClienteDTO.Nome) ? patchClienteDTO.Nome : existing.Nome;
+        existing.Email = !string.IsNullOrWhiteSpace(patchClienteDTO.Email) ? patchClienteDTO.Email : existing.Email;
+
+        return await _repo.UpdateAsync(existing, cancellationToken);
+    }
+
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken) {
+
+        var existing = await _repo.GetByIdAsync(id, cancellationToken);
+        if (existing == null) throw new KeyNotFoundException($"Cliente with ID {id} not found.");
+
+        await _repo.DeleteAsync(id, cancellationToken);
+
     }
 }

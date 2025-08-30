@@ -15,18 +15,20 @@ public class PedidoService {
         _produtoService = produtoService;
     }
 
-
     public async Task<Pedido> CreatePedidoAsync(PostPedidoDTO postPedidoDTO, CancellationToken cancellationToken) {
         var pedido = new Pedido {
             CodCliente = postPedidoDTO.CodCliente,
             ValorTotal = postPedidoDTO.ValorTotal,
-            DataPedido = DateTimeOffset.UtcNow,
+            DataPedido = DateTimeOffset.Now,
             Itens = []
         };
         var itensPedidos = await ConvertToItensPedido(postPedidoDTO.ProdutosQuantidades, cancellationToken);
         pedido.Itens = itensPedidos;
-        var createdPedido = await _pedidoRepository.AddAsync(pedido, cancellationToken);
-        return createdPedido;
+        using (var transaction = new System.Transactions.TransactionScope(System.Transactions.TransactionScopeAsyncFlowOption.Enabled)) {
+            var createdPedido = await _pedidoRepository.AddAsync(pedido, cancellationToken);
+            transaction.Complete();
+            return createdPedido;
+        }
     }
 
     public async Task<IReadOnlyList<Pedido>> GetAllPedidosAsync(int codCliente, CancellationToken cancellationToken) {
@@ -43,9 +45,17 @@ public class PedidoService {
         pedido.CodCliente = patchPedidoDto.CodCliente != 0 ? patchPedidoDto.CodCliente : pedido.CodCliente;
         pedido.ValorTotal = patchPedidoDto.ValorTotal != 0 ? patchPedidoDto.ValorTotal : pedido.ValorTotal;
         pedido.DataPedido = patchPedidoDto.DataPedido != default ? patchPedidoDto.DataPedido : pedido.DataPedido;
-        
-        pedido = await _pedidoRepository.UpdateAsync(pedido, cancellationToken);
-        return pedido;
+        using (var transaction = new System.Transactions.TransactionScope(System.Transactions.TransactionScopeAsyncFlowOption.Enabled)) {
+            pedido = await _pedidoRepository.UpdateAsync(pedido, cancellationToken);
+            return pedido;
+        }
+    }
+
+    public async Task DeletePedidoAsync(int codPedido, CancellationToken cancellationToken) {
+        using (var transaction = new System.Transactions.TransactionScope(System.Transactions.TransactionScopeAsyncFlowOption.Enabled)) {
+            await _pedidoRepository.DeleteAsync(codPedido, cancellationToken);
+            transaction.Complete();
+        }
     }
 
     private async Task<List<ItensPedido>> ConvertToItensPedido(List<ProdutoQuantidade> produtosQuantidades, CancellationToken cancellationToken) {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using TesteTecnicoApi.Entities.DTOs.PostDTOs;
 using TesteTecnicoApi.Entities;
+using TesteTecnicoApi.Entities.DTOs.PatchDTOs;
+using TesteTecnicoApi.Entities.DTOs.PostDTOs;
 using TesteTecnicoApi.Service;
 
 namespace TesteTecnicoApi.Controllers;
@@ -52,15 +53,30 @@ public class ClienteController : ControllerBase {
         if (postclienteDto == null) {
             return BadRequest("Cliente data is required.");
         }
-
-        // Basic validation
         if (string.IsNullOrWhiteSpace(postclienteDto.CNPJ) ||
             string.IsNullOrWhiteSpace(postclienteDto.Nome) ||
             string.IsNullOrWhiteSpace(postclienteDto.Email)) {
             return BadRequest("CNPJ, Nome, and Email are required fields.");
         }
-
         var createdCliente = await _service.AddAsync(postclienteDto, cancellationToken);
         return CreatedAtAction(nameof(GetClienteById), new { id = createdCliente.CodCliente }, createdCliente);
+    }
+
+    [HttpPatch("patch")]
+    public async Task<ActionResult<Cliente>> UpdateCliente([FromBody] PatchClienteDTO patchClienteDto, CancellationToken cancellationToken = default) {
+        if (patchClienteDto.CodCliente <= 0) return BadRequest("Valid CodCliente is required.");
+        if (patchClienteDto == null) return BadRequest("Patch body is required.");
+        var updated = await _service.UpdateAsync(patchClienteDto, cancellationToken);
+        return Ok(updated);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteCliente(int id, CancellationToken cancellationToken = default) {
+        if (id <= 0) return BadRequest("Invalid ID.");
+        var existing = await _service.GetByIdAsync(id, cancellationToken);
+        if (existing == null) return NotFound();
+
+        await _service.DeleteAsync(id, cancellationToken);
+        return NoContent();
     }
 }

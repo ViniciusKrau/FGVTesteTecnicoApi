@@ -18,4 +18,7 @@ public interface IClienteRepository {
     Task<Cliente?> GetByNameAsync(string name, CancellationToken cancellationToken);
 
     Task<Cliente> AddAsync(Cliente cliente, CancellationToken cancellationToken);
+
+    Task<Cliente> UpdateAsync(Cliente cliente, CancellationToken cancellationToken);
+    Task DeleteAsync(int id, CancellationToken cancellationToken);
 }

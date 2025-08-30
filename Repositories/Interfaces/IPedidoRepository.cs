@@ -10,4 +10,5 @@ public interface IPedidoRepository {
     Task<Pedido> AddAsync(Pedido pedido, CancellationToken cancellationToken);
 
     Task<Pedido> UpdateAsync(Pedido pedido, CancellationToken cancellationToken);
+    Task DeleteAsync(int codPedido, CancellationToken cancellationToken);
 }

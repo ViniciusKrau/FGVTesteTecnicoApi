@@ -85,4 +85,25 @@ public class SqlClienteRepository(IConfiguration config) : IClienteRepository {
         return cliente;
     }
 
+    public async Task<Cliente> UpdateAsync(Cliente cliente, CancellationToken cancellationToken) {
+        const string sql = @"UPDATE Cliente
+                             SET CNPJ = @CNPJ,
+                                 Nome = @Nome,
+                                 Email = @Email
+                             WHERE CodCliente = @CodCliente;
+                             SELECT CodCliente, CNPJ, Nome, Email, DataCadastro
+                             FROM Cliente
+                             WHERE CodCliente = @CodCliente;";
+        await using var conn = CreateConnection();
+        var updated = await conn.QuerySingleAsync<Cliente>(
+            new CommandDefinition(sql, cliente, cancellationToken: cancellationToken));
+        return updated;
+    }
+
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken) {
+        const string sql = @"DELETE FROM Cliente WHERE CodCliente = @id;";
+        await using var conn = CreateConnection();
+        await conn.ExecuteAsync(
+            new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
+    }
 }
