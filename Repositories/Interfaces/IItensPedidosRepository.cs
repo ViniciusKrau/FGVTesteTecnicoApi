@@ -15,4 +15,5 @@ public interface IItensPedidosRepository {
         decimal? maxPrecoUnitario = null);
 
     Task<ItensPedido> AddAsync(ItensPedido itemPedido, CancellationToken cancellationToken);
+    Task<List<ItensPedido>> GetByCodProdutoAsync(int codProduto, CancellationToken cancellationToken);
 }

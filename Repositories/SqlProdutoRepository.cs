@@ -107,4 +107,29 @@ public class SqlProdutoRepository(IConfiguration config) : IProdutoRepository {
         return await conn.QuerySingleAsync<Produto>(
             new CommandDefinition(sql, produto, cancellationToken: cancellationToken));
     }
+
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken) {
+        const string sql = @"DELETE FROM Produto WHERE CodProduto = @id;";
+        await using var conn = CreateConnection();
+        var affectedRows = await conn.ExecuteAsync(
+            new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
+        if (affectedRows == 0) {
+            throw new KeyNotFoundException($"Produto with CodProduto {id} not found.");
+        }
+    }
+
+    public async Task<Produto> UpdateAsync(Produto produto, CancellationToken cancellationToken) {
+        const string sql = @"UPDATE Produto
+                             SET Nome = @Nome,
+                                 Preco = @Preco,
+                                 Estoque = @Estoque
+                             WHERE CodProduto = @CodProduto;";
+        await using var conn = CreateConnection();
+        var affectedRows = await conn.ExecuteAsync(
+            new CommandDefinition(sql, produto, cancellationToken: cancellationToken));
+        if (affectedRows == 0) {
+            throw new KeyNotFoundException($"Produto with CodProduto {produto.CodProduto} not found.");
+        }
+        return produto;
+    }
 }

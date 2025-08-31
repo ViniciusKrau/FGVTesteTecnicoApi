@@ -18,4 +18,6 @@ public interface IProdutoRepository {
         string? nomeContains = null);
 
     Task<Produto> AddAsync(Produto produto, CancellationToken cancellationToken);
+    Task DeleteAsync(int id, CancellationToken cancellationToken);
+    Task<Produto> UpdateAsync(Produto produto, CancellationToken cancellationToken);
 }

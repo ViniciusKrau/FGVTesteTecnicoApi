@@ -43,8 +43,8 @@ public class PedidoService {
         Pedido pedido = await _pedidoRepository.GetByIdAsync(patchPedidoDto.CodPedido, cancellationToken) ?? throw new KeyNotFoundException("Pedido not found");
 
         pedido.CodCliente = patchPedidoDto.CodCliente != 0 ? patchPedidoDto.CodCliente : pedido.CodCliente;
-        pedido.ValorTotal = patchPedidoDto.ValorTotal != 0 ? patchPedidoDto.ValorTotal : pedido.ValorTotal;
         pedido.DataPedido = patchPedidoDto.DataPedido != default ? patchPedidoDto.DataPedido : pedido.DataPedido;
+        pedido.ValorTotal = await _produtoService.GetSumOfProdutos(patchPedidoDto.ProdutosQuantidades, cancellationToken);
         using (var transaction = new System.Transactions.TransactionScope(System.Transactions.TransactionScopeAsyncFlowOption.Enabled)) {
             pedido = await _pedidoRepository.UpdateAsync(pedido, cancellationToken);
             return pedido;

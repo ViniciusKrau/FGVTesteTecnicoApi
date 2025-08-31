@@ -10,8 +10,6 @@ public class PatchPedidoDTO{
 
     public int CodCliente { get; set; }
 
-    public decimal ValorTotal { get; set; }
-    
     public DateTimeOffset DataPedido { get; set; }
 
     public List<ProdutoQuantidade> ProdutosQuantidades { get; set; } = [];

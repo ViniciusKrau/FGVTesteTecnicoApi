@@ -36,7 +36,7 @@ public class PedidoController : ControllerBase {
         return Ok(updatedPedido);
     }
 
-    [HttpPost]
+    [HttpPost("create")]
     public async Task<ActionResult<Pedido>> CreatePedido([FromBody] PostPedidoDTO postPedidoDTO, CancellationToken cancellationToken) {
         var createdPedido = await _pedidoService.CreatePedidoAsync(postPedidoDTO, cancellationToken);
         return CreatedAtAction(nameof(GetPedidoById), new { codPedido = createdPedido.CodPedido }, createdPedido);

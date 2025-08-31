@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using TesteTecnicoApi.Entities.DTOs.PostDTOs;
 using TesteTecnicoApi.Entities;
+using TesteTecnicoApi.Entities.DTOs.PatchDTOs;
+using TesteTecnicoApi.Entities.DTOs.PostDTOs;
 using TesteTecnicoApi.Service;
 
 namespace TesteTecnicoApi.Controllers;
@@ -87,5 +88,18 @@ public class ProdutoController : ControllerBase {
         }
         var createdProduto = await _service.AddAsync(produtoDto, cancellationToken);
         return CreatedAtAction(nameof(GetProdutoById), new { id = createdProduto.CodProduto }, createdProduto);
+    }
+
+    [HttpPatch("patch")]
+    public async Task<ActionResult<Produto>> UpdateProduto([FromBody] PatchProdutoDTO patchProdutoDto, CancellationToken cancellationToken = default) {
+        if (patchProdutoDto == null) return BadRequest("Patch body is required.");
+        var updated = await _service.UpdateAsync(patchProdutoDto, cancellationToken);
+        return Ok(updated);
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteProduto(int id, CancellationToken cancellationToken = default) {
+        await _service.DeleteAsync(id, cancellationToken);
+        return NoContent();
     }
 }
