@@ -16,6 +16,22 @@ public class PedidoService {
     }
 
     public async Task<Pedido> CreatePedidoAsync(PostPedidoDTO postPedidoDTO, CancellationToken cancellationToken) {
+        List<Produto> produtos = await _produtoService.GetByIdsAsync(postPedidoDTO.ProdutosQuantidades.Select(p => p.CodProduto).ToList(), cancellationToken);
+
+        foreach (var pq in postPedidoDTO.ProdutosQuantidades) {
+            var produto = produtos.First(p => p.CodProduto == pq.CodProduto);
+            if (pq.Quantidade <= 0) throw new ArgumentOutOfRangeException(nameof(pq.Quantidade), "Quantidade must be greater than zero");
+            if (produto.Estoque < pq.Quantidade) {
+                throw new InvalidOperationException($"Insufficient stock for product {produto.CodProduto}. Requested {pq.Quantidade}, available {produto.Estoque}");
+            }
+            produto.Estoque -= pq.Quantidade;
+            await _produtoService.UpdateAsync(new PatchProdutoDTO {
+                CodProduto = produto.CodProduto,
+                Estoque = produto.Estoque
+            }, cancellationToken);
+        }
+        
+
         var pedido = new Pedido {
             CodCliente = postPedidoDTO.CodCliente,
             ValorTotal = postPedidoDTO.ValorTotal,

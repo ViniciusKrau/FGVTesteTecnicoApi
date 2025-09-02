@@ -15,9 +15,13 @@ done
 
 # run init script if present
 if [ -f /init.sql ]; then
-  echo "Running init.sql..."
+  echo "Found /init.sql, running..."
+  ls -l /init.sql
   /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -i /init.sql
+else
+  echo "/init.sql not found!"
 fi
 
 # wait on sqlservr process so container stays alive
 wait "$sqlservr_pid"
+

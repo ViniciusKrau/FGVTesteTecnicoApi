@@ -22,7 +22,7 @@ services:
         depends_on:
             - sqlserver
         environment:
-            - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=TesteTecnicoDB;User Id=sa;Password=StrongP@ssw0rd!;
+            - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=TesteTecnicoDB;User Id=sa;Password=StrongP@ssw0rd!;TrustServerCertificate=True;Encrypt=False
             - ASPNETCORE_ENVIRONMENT=Development
         command: ["dotnet", "TesteTecnicoApi.dll"]
         container_name: testetecnicoapi
