@@ -106,4 +106,13 @@ public class SqlClienteRepository(IConfiguration config) : IClienteRepository {
         await conn.ExecuteAsync(
             new CommandDefinition(sql, new { id }, cancellationToken: cancellationToken));
     }
+
+    public async Task<Cliente?> GetByCNPJAsync(string cnpj, CancellationToken cancellationToken) {
+        const string sql = @"SELECT CodCliente, CNPJ, Nome, Email, DataCadastro
+                                FROM Cliente
+                             WHERE CNPJ = @cnpj";
+        await using var conn = CreateConnection();
+        return await conn.QueryFirstOrDefaultAsync<Cliente>(
+            new CommandDefinition(sql, new { cnpj }, cancellationToken: cancellationToken));
+    }
 }

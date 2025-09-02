@@ -24,6 +24,12 @@ public class PedidoController : ControllerBase {
         return Ok(pedido);
     }
 
+    [HttpGet("all")]
+    public async Task<ActionResult<IReadOnlyList<ResponsePedidoDTO>>> GetAllPedidosByCliente(CancellationToken cancellationToken) {
+        var pedidos = await _pedidoService.GetAllPedidosAsync(cancellationToken);
+        return Ok(pedidos);
+    }
+
     [HttpGet("cliente/{codCliente}")]
     public async Task<ActionResult<IReadOnlyList<Pedido>>> GetAllPedidos(int codCliente, CancellationToken cancellationToken) {
         var pedidos = await _pedidoService.GetAllPedidosAsync(codCliente, cancellationToken);

@@ -33,6 +33,16 @@ public class ClienteController : ControllerBase {
         });
     }
 
+    [HttpGet("cnpj/{cnpj}")]
+    public async Task<ActionResult<Cliente>> GetClienteByCNPJ(string cnpj, CancellationToken cancellationToken = default) {
+        try {
+            var cliente = await _service.GetByCNPJAsync(cnpj, cancellationToken);
+            return Ok(cliente);
+        } catch (KeyNotFoundException) {
+            return NotFound();
+        }
+    }
+
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Cliente>> GetClienteById(int id, CancellationToken cancellationToken = default) {
         var cliente = await _service.GetByIdAsync(id, cancellationToken);

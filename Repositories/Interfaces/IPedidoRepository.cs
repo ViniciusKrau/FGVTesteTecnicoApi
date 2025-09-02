@@ -3,7 +3,7 @@ using TesteTecnicoApi.Entities;
 namespace TesteTecnicoApi.Repositories.Interfaces;
 
 public interface IPedidoRepository {
-    Task<IReadOnlyList<Pedido>> GetAllAsync(CancellationToken cancellationToken, int codCliente);
+    Task<IReadOnlyList<Pedido>> GetAllByClienteAsync(int codCliente, CancellationToken cancellationToken);
 
     Task<Pedido> GetByIdAsync(int id, CancellationToken cancellationToken);
 
@@ -11,4 +11,5 @@ public interface IPedidoRepository {
 
     Task<Pedido> UpdateAsync(Pedido pedido, CancellationToken cancellationToken);
     Task DeleteAsync(int codPedido, CancellationToken cancellationToken);
+    Task<IReadOnlyList<ResponsePedidoDTO>> GetAllAsync(CancellationToken cancellationToken);
 }

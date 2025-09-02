@@ -1,3 +1,4 @@
+using Azure;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using TesteTecnicoApi.Entities;
@@ -25,7 +26,7 @@ public class SqlPedidoRepository(IConfiguration config) : IPedidoRepository {
         };
     }
 
-    public async Task<IReadOnlyList<Pedido>> GetAllAsync(CancellationToken cancellationToken, int codCliente) {
+    public async Task<IReadOnlyList<Pedido>> GetAllByClienteAsync(int codCliente, CancellationToken cancellationToken) {
         const string sql = @"SELECT * FROM Pedido
                                 WHERE CodCliente = @CodCliente
                                 ORDER BY DataPedido DESC;";
@@ -74,5 +75,16 @@ public class SqlPedidoRepository(IConfiguration config) : IPedidoRepository {
         if (affectedRows == 0) {
             throw new KeyNotFoundException($"Pedido with CodPedido {codPedido} not found.");
         }
+    }
+
+    public async Task<IReadOnlyList<ResponsePedidoDTO>> GetAllAsync(CancellationToken cancellationToken) {
+        const string sql = @"SELECT p.CodPedido, p.CodCliente, p.DataPedido, p.ValorTotal, c.Nome, c.CNPJ
+                         FROM Pedido p
+                         INNER JOIN Cliente c ON p.CodCliente = c.CodCliente
+                         ORDER BY p.DataPedido DESC;";
+        await using var conn = CreateConnection();
+        var pedidos = await conn.QueryAsync<ResponsePedidoDTO>(
+            new CommandDefinition(sql, cancellationToken: cancellationToken));
+        return pedidos.AsList();
     }
 }

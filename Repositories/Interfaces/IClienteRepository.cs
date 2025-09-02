@@ -21,4 +21,5 @@ public interface IClienteRepository {
 
     Task<Cliente> UpdateAsync(Cliente cliente, CancellationToken cancellationToken);
     Task DeleteAsync(int id, CancellationToken cancellationToken);
+    Task<Cliente?> GetByCNPJAsync(string cnpj, CancellationToken cancellationToken);
 }

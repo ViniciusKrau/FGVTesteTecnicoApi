@@ -10,19 +10,19 @@ public class SqlItensPedidosRepository(IConfiguration config) : IItensPedidosRep
     private readonly string _connectionString = config.GetConnectionString("DefaultConnection")!;
     private SqlConnection CreateConnection() => new SqlConnection(_connectionString);
 
-    public async Task<ItensPedido> AddAsync(ItensPedido itemPedido, CancellationToken cancellationToken) {
+    public Task<ItensPedido> AddAsync(ItensPedido itemPedido, CancellationToken cancellationToken) {
         throw new NotImplementedException();
     }
 
-    public async Task<IReadOnlyList<ItensPedido>> GetAllAsync(CancellationToken cancellationToken) {
+    public Task<IReadOnlyList<ItensPedido>> GetAllAsync(CancellationToken cancellationToken) {
         throw new NotImplementedException();
     }
 
-    public async Task<ItensPedido?> GetByIdAsync(int id, CancellationToken cancellationToken) {
+    public Task<ItensPedido?> GetByIdAsync(int id, CancellationToken cancellationToken) {
         throw new NotImplementedException();
     }
 
-    public async Task<PagedResult<ItensPedido>> GetPageAsync(int page, int pageSize, CancellationToken cancellationToken,
+    public Task<PagedResult<ItensPedido>> GetPageAsync(int page, int pageSize, CancellationToken cancellationToken,
                                     string sort = "CodItemPedido",
                                     int? minQuantidade = null,
                                     decimal? minPrecoUnitario = null,

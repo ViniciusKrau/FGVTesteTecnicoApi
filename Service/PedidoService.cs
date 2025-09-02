@@ -32,7 +32,7 @@ public class PedidoService {
     }
 
     public async Task<IReadOnlyList<Pedido>> GetAllPedidosAsync(int codCliente, CancellationToken cancellationToken) {
-        return await _pedidoRepository.GetAllAsync(cancellationToken, codCliente);
+        return await _pedidoRepository.GetAllByClienteAsync(codCliente, cancellationToken);
     }
 
     public async Task<Pedido> GetPedidoByIdAsync(int codPedido, CancellationToken cancellationToken) {
@@ -66,5 +66,9 @@ public class PedidoService {
             PrecoUnitario = p.Preco,
         }).ToList();
         return itensPedidos;
+    }
+
+    public async Task<IReadOnlyList<ResponsePedidoDTO>> GetAllPedidosAsync(CancellationToken cancellationToken) {
+        return await _pedidoRepository.GetAllAsync(cancellationToken);
     }
 }
