@@ -1,0 +1,29 @@
+services:
+    sqlserver:
+        build:
+            context: .
+            dockerfile: DockerFile.sqlserver
+        image: testetecnico_sqlserver
+        environment:
+            - SA_PASSWORD=StrongP@ssw0rd!
+            - ACCEPT_EULA=Y
+            - MSSQL_DB_NAME=TesteTecnicoDB
+        container_name: sqlserver
+        ports:
+            - "1433:1433"
+
+    api:
+        image: testetecnicoapi
+        build:
+            context: .
+            dockerfile: DockerFile
+        ports:
+            - "5000:80"
+        depends_on:
+            - sqlserver
+        environment:
+            - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=TesteTecnicoDB;User Id=sa;Password=StrongP@ssw0rd!;
+            - ASPNETCORE_ENVIRONMENT=Development
+        command: ["dotnet", "TesteTecnicoApi.dll"]
+        container_name: testetecnicoapi
+        restart: always

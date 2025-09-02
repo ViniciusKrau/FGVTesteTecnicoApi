@@ -1,0 +1,21 @@
+FROM mcr.microsoft.com/mssql/server:2022-latest
+
+USER root
+ENV ACCEPT_EULA=Y
+ENV MSSQL_PID=Express
+
+RUN apt-get update && \
+    ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc && \
+    apt-get clean
+
+RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' > /etc/profile.d/mssql-tools.sh && \
+    chmod +x /etc/profile.d/mssql-tools.sh && \
+    ln -s /opt/mssql-tools/bin/sqlcmd /usr/bin/sqlcmd || true && \
+    ln -s /opt/mssql-tools/bin/bcp /usr/bin/bcp || true
+
+COPY init.sql /init.sql
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+USER mssql
+ENTRYPOINT ["/entrypoint.sh"]
