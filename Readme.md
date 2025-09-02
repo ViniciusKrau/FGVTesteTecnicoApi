@@ -12,13 +12,16 @@ cd d:\Codes\.Net\TesteTecnicoApi
 3. Execute o comando abaixo para subir os containers:
 
 ```sh
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 4. Aguarde até que todos os serviços estejam iniciados.
 
 
-5. Para parar e remover os containers, execute:
+5. Acesse: http://localhost:5000/swagger/index.html
+
+
+6. Para parar e remover os containers, execute:
 
 ```sh
 docker-compose down
